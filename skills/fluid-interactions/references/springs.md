@@ -27,8 +27,6 @@ stiffness = (2π / response)² · mass
 damping   = 4π · dampingRatio · mass / response
 ```
 
-Not using motion? `springTo({ from, to, velocity, response, dampingRatio, onUpdate })` in [code/spring.ts](../code/spring.ts) takes the same two numbers and gives the same motion. See [other libraries](other-libraries.md).
-
 Changing `response` changes the speed without changing the feel; changing `dampingRatio` changes the bounce without changing the speed. With raw stiffness and damping, changing one changes both.
 
 ## How much bounce

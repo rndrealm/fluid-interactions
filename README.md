@@ -17,11 +17,11 @@ Then ask your agent for the interaction, for example "make this card draggable a
 ```
 skills/fluid-interactions/
 ├── SKILL.md            the rules, defaults and a checklist
-├── code/               physics.ts, spring.ts, use-drag.ts, use-motion-preference.ts
+├── code/               physics.ts, use-drag.ts, use-motion-preference.ts
 └── references/         one file per pattern, loaded only when needed
 ```
 
-Built on [motion](https://motion.dev): the skill tells your agent to use it, and to add it if the project has no animation library yet. When motion isn't an option, it falls back to a library-free spring that matches motion's, with a guide for GSAP and plain JS.
+Built on [motion](https://motion.dev). The skill tells your agent to use it, and to install it if the project doesn't have it yet.
 
 ## See it
 

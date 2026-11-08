@@ -14,11 +14,20 @@ Interfaces where motion behaves like physical objects instead of playing back a 
 
 ## Use motion
 
-Build with [motion](https://motion.dev) (`motion/react` in React, `motion` elsewhere). Its springs take a starting velocity, its motion values update without re-rendering, and it respects reduced motion, which is everything this skill relies on.
+Always build these interactions with [motion](https://motion.dev). Its springs start from a velocity, its motion values update without re-rendering, and it follows reduced motion, which is everything this skill relies on. Don't use GSAP, anime.js or CSS transitions for them; the code here and in the references assumes motion. (The one hand-written loop, coasting in a custom scroller, still writes to a motion value and hands off to a motion spring.)
 
-- **No animation library yet:** install `motion` and use it.
-- **The project already uses motion or Framer Motion:** use it. Framer Motion is the same library under its old name.
-- **The project already uses another library (GSAP, anime.js, …):** still suggest motion for these interactions, since it can sit alongside the existing library. Only build without it if the user prefers to keep one library, or motion can't be used. Then read [other libraries](references/other-libraries.md), which maps every piece across and provides [code/spring.ts](code/spring.ts).
+**Install it before writing any code** if it isn't in `package.json`, using the project's package manager (check the lockfile):
+
+```sh
+npm install motion     # package-lock.json
+pnpm add motion        # pnpm-lock.yaml
+yarn add motion        # yarn.lock
+bun add motion         # bun.lock / bun.lockb
+```
+
+- **React:** import from `motion/react` (`motion`, `animate`, `useMotionValue`, `useTransform`, `MotionConfig`, `useReducedMotion`).
+- **Already has `framer-motion`:** that's motion under its old name. Use it as it is, importing from `framer-motion`; don't install both.
+- **Already uses another animation library:** keep it for whatever it already does, and add motion alongside it for these interactions. Don't rebuild these patterns in the other library.
 
 Never fake a spring with a duration and an easing curve (`elastic`, `back`, cubic-bezier overshoot). They can't start from the finger's speed.
 
@@ -39,11 +48,10 @@ Never fake a spring with a duration and an easing curve (`elastic`, `back`, cubi
 
 ## Code
 
-Copy these into the project and adapt them. `physics.ts` and `spring.ts` have no dependencies; the two hooks need React, and `use-motion-preference.ts` needs motion/react.
+Copy these into the project and adapt them. `physics.ts` has no dependencies; the hooks need React, and `use-motion-preference.ts` needs motion.
 
 - [code/physics.ts](code/physics.ts): `springFromResponse`, `noBounce`, `VelocityTracker`, `rubberBand`, `applyRubberBand`, `rubberBandInverse`, `project`, `DECELERATION`, `nearest`, `nearestPoint`, `clamp`, `FADE`.
 - [code/use-drag.ts](code/use-drag.ts): a pointer-events drag hook that reports the offset from the start and the release velocity, and always calls `onEnd`.
-- [code/spring.ts](code/spring.ts): `springTo` and `springAt`, a spring that doesn't depend on any library, with the same model and numbers as `springFromResponse`. Use it with GSAP, plain JS or any framework.
 - [code/use-motion-preference.ts](code/use-motion-preference.ts): `{ reduceMotion, spring }`, where `spring()` drops the bounce when reduced motion is on.
 
 ## The basic shape of every gesture
@@ -88,7 +96,6 @@ Read the reference for the pattern you are building:
 | Thumbnail that grows into a detail view and drags back down to close                                    | [morphing](references/morphing.md)                   |
 | Edge swipe to go back in a navigation stack                                                             | [swipe back](references/swipe-back.md)               |
 | One gesture with several outcomes or modes (home bar, fine scrubbing, stretching swipe actions)         | [gesture modes](references/gesture-modes.md)         |
-| GSAP, plain JS, Vue, Svelte or anything other than motion/react                                         | [other libraries](references/other-libraries.md)     |
 | Reduced motion                                                                                          | [reduced motion](references/reduced-motion.md)       |
 | A gesture that freezes, gets stuck, or breaks taps on touch                                             | [pointer events](references/pointer-events.md)       |
 
