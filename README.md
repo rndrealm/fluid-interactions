@@ -25,7 +25,7 @@ Built on [motion](https://motion.dev). The skill tells your agent to use it, and
 
 ## See it
 
-Every pattern has a live demo, with a note on how to play with each one: [rndrealm.com/fluid-interactions/demos](https://www.rndrealm.com/fluid-interactions/demos)
+Every pattern has a live demo, with a note on how to play with each one: [labs.rndrealm.com/fluid-interactions/demos](https://labs.rndrealm.com/fluid-interactions/demos)
 
 ## License
 
