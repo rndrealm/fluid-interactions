@@ -12,7 +12,15 @@ Interfaces where motion behaves like physical objects instead of playing back a 
 - **Gesture modes:** one gesture doing different things depending on how it moves.
 - **Getting it right everywhere:** touch quirks, performance, and reduced motion.
 
-The examples use React and motion/react, but the ideas are plain maths plus pointer events and work in any stack.
+## Use motion
+
+Build with [motion](https://motion.dev) (`motion/react` in React, `motion` elsewhere). Its springs take a starting velocity, its motion values update without re-rendering, and it respects reduced motion, which is everything this skill relies on.
+
+- **No animation library yet:** install `motion` and use it.
+- **The project already uses motion or Framer Motion:** use it. Framer Motion is the same library under its old name.
+- **The project already uses another library (GSAP, anime.js, …):** still suggest motion for these interactions, since it can sit alongside the existing library. Only build without it if the user prefers to keep one library, or motion can't be used. Then read [other libraries](references/other-libraries.md), which maps every piece across and provides [code/spring.ts](code/spring.ts).
+
+Never fake a spring with a duration and an easing curve (`elastic`, `back`, cubic-bezier overshoot). They can't start from the finger's speed.
 
 ## The rules
 
@@ -31,10 +39,11 @@ The examples use React and motion/react, but the ideas are plain maths plus poin
 
 ## Code
 
-Copy these into the project and adapt them. They have no dependencies beyond React and motion/react.
+Copy these into the project and adapt them. `physics.ts` and `spring.ts` have no dependencies; the two hooks need React, and `use-motion-preference.ts` needs motion/react.
 
 - [code/physics.ts](code/physics.ts): `springFromResponse`, `noBounce`, `VelocityTracker`, `rubberBand`, `applyRubberBand`, `rubberBandInverse`, `project`, `DECELERATION`, `nearest`, `nearestPoint`, `clamp`, `FADE`.
 - [code/use-drag.ts](code/use-drag.ts): a pointer-events drag hook that reports the offset from the start and the release velocity, and always calls `onEnd`.
+- [code/spring.ts](code/spring.ts): `springTo` and `springAt`, a spring that doesn't depend on any library, with the same model and numbers as `springFromResponse`. Use it with GSAP, plain JS or any framework.
 - [code/use-motion-preference.ts](code/use-motion-preference.ts): `{ reduceMotion, spring }`, where `spring()` drops the bounce when reduced motion is on.
 
 ## The basic shape of every gesture
@@ -79,6 +88,7 @@ Read the reference for the pattern you are building:
 | Thumbnail that grows into a detail view and drags back down to close                                    | [morphing](references/morphing.md)                   |
 | Edge swipe to go back in a navigation stack                                                             | [swipe back](references/swipe-back.md)               |
 | One gesture with several outcomes or modes (home bar, fine scrubbing, stretching swipe actions)         | [gesture modes](references/gesture-modes.md)         |
+| GSAP, plain JS, Vue, Svelte or anything other than motion/react                                         | [other libraries](references/other-libraries.md)     |
 | Reduced motion                                                                                          | [reduced motion](references/reduced-motion.md)       |
 | A gesture that freezes, gets stuck, or breaks taps on touch                                             | [pointer events](references/pointer-events.md)       |
 
