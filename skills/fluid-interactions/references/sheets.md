@@ -47,7 +47,7 @@ const backgroundScale = useTransform(
 
 Under reduced motion keep the dim but drop the scale; see [reduced motion](reduced-motion.md).
 
-At the top detent, make the dimmed background tappable: a tap there drops the sheet to the middle detent, not all the way closed. The user wants the background back, not to lose their place in the sheet. Below the top detent, leave the background alone (`pointer-events: none` on the dim) so the map or page underneath still works.
+At the top detent, make the dimmed background tappable: a tap there closes the sheet, with the same spring the detent buttons use. Below the top detent, leave the background alone (`pointer-events: none` on the dim) so the map or page underneath still works.
 
 ## Content that scrolls
 
