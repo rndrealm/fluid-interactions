@@ -121,6 +121,7 @@ Two choices have their own guidance, so don't guess them: how much a spring shou
 - [ ] Act again the moment an animation looks finished (open another row, tap the revealed page, swipe the other way): it responds straight away, no dead quarter-second.
 - [ ] Flick it: it leaves at the finger's speed, no hitch on release.
 - [ ] Drag past the edge: it resists and springs back.
+- [ ] Drop something that can rest anywhere inside its bounds: it stays exactly there, no wobble.
 - [ ] Drag in a direction that does nothing: it resists (not frozen, not free) and springs back.
 - [ ] On a phone: drag slowly; it tracks the finger and doesn't scroll the page (`touch-action`).
 - [ ] Taps on buttons and rows inside the draggable still work.

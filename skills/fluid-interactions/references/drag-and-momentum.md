@@ -38,7 +38,22 @@ At small pulls it moves about `c` px per finger px; at large pulls it barely mov
 x.set(applyRubberBand(origin.current + delta.x, min, max, containerWidth));
 ```
 
-On release, spring back to the edge with the release velocity. To grab something mid-bounce and continue the stretch without a jump, convert the current offset back into a pull with `rubberBandInverse(offset, d)`.
+On release, spring back to the edge with the release velocity, **but only on an axis that's actually past its edge**. Released inside its bounds, a freely placed element stays exactly where it was dropped:
+
+```ts
+onEnd: (velocity) => {
+  const targetX = clamp(x.get(), min, max);
+  // Already inside: leave it. Springing to where it already is would carry
+  // the release speed past that point and wobble back, a bounce from nowhere.
+  if (targetX !== x.get()) animate(x, targetX, { ...SETTLE, velocity: velocity.x });
+},
+```
+
+Use a spring with no bounce (damping ratio `1`) for the trip back from past an edge: the rubber band has already shown where the edge is, and overshooting it would show a gap ([springs](springs.md#how-much-bounce)).
+
+This is only for things that can rest anywhere. Something with targets (corners, detents, pages) always springs to the chosen target, as described under projection.
+
+To grab something mid-bounce and continue the stretch without a jump, convert the current offset back into a pull with `rubberBandInverse(offset, d)`.
 
 For something with no free range (it should always return to 0), use `stretch(delta, d)`.
 
