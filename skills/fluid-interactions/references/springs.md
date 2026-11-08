@@ -79,4 +79,35 @@ onStart: () => {
 };
 ```
 
-Don't block input while something is animating, and don't rely on `onComplete` to clear flags: motion skips `onComplete` when another animation replaces the current one. If you need to know whether something is moving, read the value itself (`x.isAnimating()`, `x.get() !== 0`).
+## Decide from the target, not the value
+
+A spring looks finished long before it is. With no bounce, a 0.35s spring travelling 286px is 98% of the way there at about 0.3s, but motion only finishes it (and calls `onComplete`) at about 0.54s, once it's within 0.5px and nearly still. For that last quarter of a second the value is a fraction of a pixel off its target.
+
+So never use the animated value, `isAnimating()` or `onComplete` to decide what state something is in or whether input is allowed:
+
+- `x.get() !== 0` is true for a row that looks closed, so it still counts as open.
+- `x.isAnimating()` is true for a page that looks gone, so taps on what's underneath get refused.
+- Waiting for `onComplete` makes the interface feel like it ignores you right after every animation.
+
+Instead, keep the **target** in a ref and set it whenever you start an animation. That's the state the interface is in, as far as the user is concerned:
+
+```ts
+const restingAt = useRef(0); // 0 closed, ±ACTIONS_WIDTH open
+
+const settle = (target: number, velocity: number) => {
+  restingAt.current = target; // decided now, not when the spring ends
+  animate(x, target, { ...SWIPE, velocity });
+};
+
+onStart: () => {
+  x.stop();
+  origin.current = x.get(); // where it is, for following the finger
+  const openSide = Math.sign(restingAt.current); // where it's going, for deciding
+},
+```
+
+Use the value for positioning (where to continue the drag from), and the target for decisions (which side is open, which page is current, whether a tap should go through).
+
+Because every new animation overwrites the target, this can't get stuck the way a flag cleared in `onComplete` can (motion skips `onComplete` when another animation replaces the current one). Clear or change the target when the user grabs the element mid-flight.
+
+If you need `onComplete` for cleanup (popping a page, unmounting a card), guard it with the target, so a late `onComplete` from an animation the user already overrode does nothing. And when the user acts during the tail, do the cleanup right away instead of waiting for it; see [swipe back](swipe-back.md).

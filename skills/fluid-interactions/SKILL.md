@@ -35,7 +35,7 @@ Never fake a spring with a duration and an easing curve (`elastic`, `back`, cubi
 
 1. **Animate with springs, not durations.** A spring only needs a target and a starting velocity, so it can pick up from wherever the finger left off. Describe springs by response (seconds) and damping ratio with `springFromResponse`, not raw stiffness and damping. See [springs](references/springs.md).
 2. **Hand the release velocity to the spring.** Track the pointer with `VelocityTracker` (last 100ms only) and pass `velocity` into the animation. Without it, the element stops dead for a frame before setting off.
-3. **Everything is interruptible.** On pointer down, `stop()` the animation and read the current value as the new origin. Never block input while something is animating. See [drag and momentum](references/drag-and-momentum.md).
+3. **Everything is interruptible.** On pointer down, `stop()` the animation and read the current value as the new origin. Never block input while something is animating. Decide state (open or closed, which page is current) from where an animation is **heading**, not from the value or `onComplete`: a spring looks done long before it finishes. See [drag and momentum](references/drag-and-momentum.md) and [decide from the target](references/springs.md#decide-from-the-target-not-the-value).
 4. **Decide where it lands from where it was going.** On release, `project(velocity)` gives where a flick would coast to; snap to the nearest target from that point, not from the release point. That is what lets a short, fast flick skip a detent.
 5. **Rubber band past the edges** instead of hard-stopping: `applyRubberBand(value, min, max, d)`. The further you pull, the less it moves.
 6. **Directions that lead nowhere resist.** If only one direction does something (down dismisses, right goes back), the others still move, but under a rubber band, then spring back on release. Don't freeze them and don't let them move freely: free movement suggests an action that isn't there. This is only for something the user is holding that moves freely. If the other axis belongs to something else (page scroll, a parent list), hand it off with a direction lock instead of rubber banding. See [drag and momentum](references/drag-and-momentum.md#directions-with-no-action).
@@ -118,6 +118,7 @@ Two choices have their own guidance, so don't guess them: how much a spring shou
 ## Checklist before calling it done
 
 - [ ] Grab it mid-animation: it stops exactly where it is, no jump.
+- [ ] Act again the moment an animation looks finished (open another row, tap the revealed page, swipe the other way): it responds straight away, no dead quarter-second.
 - [ ] Flick it: it leaves at the finger's speed, no hitch on release.
 - [ ] Drag past the edge: it resists and springs back.
 - [ ] Drag in a direction that does nothing: it resists (not frozen, not free) and springs back.

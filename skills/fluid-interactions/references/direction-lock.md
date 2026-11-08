@@ -66,7 +66,7 @@ onEnd: (velocity) => {
 
 Details that matter:
 
-- **An open row can only close.** Record which side is open at grab time. A hard swipe the other way rubber bands at 0 instead of revealing the other side.
+- **An open row can only close.** At grab time, read which side is open from where the row was last sent (a `restingAt` ref set in `onEnd`), not from `x`. A row finishing its close sits a fraction of a pixel off 0 for a while after it looks shut; reading `x` would count it as still open, and the other side couldn't be swiped. A hard swipe the other way on a genuinely open row rubber bands at 0 instead of revealing the other side. See [decide from the target](springs.md#decide-from-the-target-not-the-value).
 - **Action buttons stretch with the rubber band.** Past the open width the row keeps rubber banding, and the buttons grow with it so they always exactly fill the gap. That stretch is the feedback for a long swipe. On its own it doesn't run an action; the row still settles open. Only make a full swipe trigger an action when that's asked for (see [gesture modes](gesture-modes.md)).
 - **Do it with transforms, not width.** Draw each button much wider than it needs to be (wider than the rubber band can ever reach), mostly hidden under the row, and slide it out with `x`. With two buttons per side, each shows half the gap, button `n` sliding to `(n + 1) · size`, where `size` is half the row's offset. The button nearest the edge stacks on top so the other can tuck behind it. Keep the icon in a fixed square on the edge facing the row, so it doesn't stretch.
 

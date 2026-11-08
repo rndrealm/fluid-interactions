@@ -30,16 +30,51 @@ const settle = (velocity: number) => {
 };
 ```
 
-- **Catching mid-slide:** if `x > 0` on pointer down, `x.stop()`, take it from where it is and start dragging straight away.
+- **Catching mid-slide:** if `x > 0` and the press lands **on the moving page** (`fromEdge >= x`), `x.stop()`, take it from where it is and start dragging straight away. A press to the left of the moving page's edge is on the page underneath: leave it alone, so its rows can be tapped.
 - **A cancel or lost capture is the system taking the touch,** not a flick: settle with velocity `0`.
 - **Reset the whole gesture state on end,** phase too, so nothing leaks into the next drag.
 - **Recover from a stale gesture:** if a new pointer arrives while the old one is recorded but no longer captured, the old touch ended without telling you. Reset and accept the new one, or every drag from then on gets refused.
 
 ## Changing pages without a flash
 
-Pop the page in the spring's `onComplete`, then reset `x` to 0 in a `useLayoutEffect` keyed on the stack length. That runs after React swaps the pages but before paint, so the outgoing page never flashes back for a frame. A push sets `x` to `width` in the same effect and springs it to 0.
+Pop the page in the spring's `onComplete`, then reset `x` to 0 in a `useLayoutEffect` keyed on the stack. That runs after React swaps the pages but before paint, so the outgoing page never flashes back for a frame. A push sets `x` to `width` in the same effect and springs it to 0.
 
-Ignore taps on rows while a page is moving (read `x.isAnimating() || x.get() !== 0`, not a flag), or they stack pages mid-slide.
+## Taps while a page is going back
+
+The page underneath is fully revealed well before the back spring finishes (about 0.3s against 0.54s for a 0.35s no-bounce spring). If taps on it wait for `onComplete`, every quick tap after going back is silently dropped. Don't wait:
+
+```ts
+const goingBack = useRef(false); // set in goBack, cleared on pop, stay, or grab
+
+const goBack = (velocity: number) => {
+  goingBack.current = true;
+  animate(x, width, { ...NAV, velocity, onComplete: pop });
+};
+
+const pop = () => {
+  if (!goingBack.current) return; // a late onComplete after the user took over
+  goingBack.current = false;
+  setStack((s) => (s.length > 1 ? s.slice(0, -1) : s));
+};
+
+// Rows on the page underneath
+const openFromUnder = (to: string) => {
+  if (!goingBack.current) return;
+  goingBack.current = false;
+  x.stop();
+  setStack((s) => [...s.slice(0, -1), to]); // drop the outgoing page, push the new one, in one update
+};
+```
+
+The layout effect then has to treat "same length, different array" as a push too, so the new page slides in from the right:
+
+```ts
+const pushed =
+  stack.length > prev.length ||
+  (stack.length === prev.length && stack !== prev);
+```
+
+Taps on the **moving** page itself (during a push, or while it slides away) are still ignored, or they'd stack pages mid-slide.
 
 ## Gotchas
 
