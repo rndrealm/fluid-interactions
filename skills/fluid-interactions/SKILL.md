@@ -1,6 +1,6 @@
 ---
 name: fluid-interactions
-description: "Build gesture-driven web interfaces that feel native: drags, flicks, sheets, swipe-back, swipe actions, pull to refresh, scrubbers, card-to-detail morphs and app-switcher style gestures. Use when adding or fixing anything the user drags, flicks or swipes, when an animation needs to start from the finger's speed, when something should rubber band at an edge, or when a gesture feels stuck, jumpy or janky on touch."
+description: "Build gesture-driven web interfaces that feel native: drags, flicks, sheets, swipe-back, swipe actions, pull to refresh, scrubbers, pinch to zoom, card-to-detail morphs and app-switcher style gestures. Use when adding or fixing anything the user drags, flicks, swipes or pinches, when an animation needs to start from the finger's speed, when something should rubber band at an edge, or when a gesture feels stuck, jumpy or janky on touch."
 ---
 
 # Fluid interactions
@@ -50,8 +50,9 @@ Never fake a spring with a duration and an easing curve (`elastic`, `back`, cubi
 
 Copy these into the project and adapt them. `physics.ts` has no dependencies; the hooks need React, and `use-motion-preference.ts` needs motion.
 
-- [code/physics.ts](code/physics.ts): `springFromResponse`, `noBounce`, `VelocityTracker`, `rubberBand`, `applyRubberBand`, `rubberBandInverse`, `project`, `DECELERATION`, `nearest`, `nearestPoint`, `clamp`, `FADE`.
+- [code/physics.ts](code/physics.ts): `springFromResponse`, `noBounce`, `VelocityTracker`, `rubberBand`, `applyRubberBand`, `rubberBandInverse`, `unapplyRubberBand`, `project`, `DECELERATION`, `nearest`, `nearestPoint`, `clamp`, `FADE`.
 - [code/use-drag.ts](code/use-drag.ts): a pointer-events drag hook that reports the offset from the start and the release velocity, and always calls `onEnd`.
+- [code/use-pinch.ts](code/use-pinch.ts): a multi-finger hook that reports the fingers' midpoint and how far apart they've moved, re-measures whenever a finger is added or lifted, and detects double taps.
 - [code/use-motion-preference.ts](code/use-motion-preference.ts): `{ reduceMotion, spring }`, where `spring()` drops the bounce when reduced motion is on.
 
 ## The basic shape of every gesture
@@ -95,6 +96,7 @@ Read the reference for the pattern you are building:
 | Video or audio scrubber with fine scrubbing                                                             | [scrubbing](references/scrubbing.md)                 |
 | Thumbnail that grows into a detail view and drags back down to close                                    | [morphing](references/morphing.md)                   |
 | Edge swipe to go back in a navigation stack                                                             | [swipe back](references/swipe-back.md)               |
+| Pinch to zoom and pan an image or canvas, double tap to zoom, trackpad pinch                            | [pinch](references/pinch.md)                         |
 | One gesture with several outcomes or modes (home bar, fine scrubbing, stretching swipe actions)         | [gesture modes](references/gesture-modes.md)         |
 | Reduced motion                                                                                          | [reduced motion](references/reduced-motion.md)       |
 | A gesture that freezes, gets stuck, or breaks taps on touch                                             | [pointer events](references/pointer-events.md)       |

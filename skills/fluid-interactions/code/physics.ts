@@ -58,6 +58,20 @@ export const applyRubberBand = (
   return value;
 };
 
+// The reverse of applyRubberBand: the value before it was rubber banded. Lets
+// you grab something mid-spring past its edge without it jumping.
+export const unapplyRubberBand = (
+  value: number,
+  min: number,
+  max: number,
+  d: number,
+  c = RUBBER_BAND_C,
+) => {
+  if (value < min) return min - rubberBandInverse(min - value, d, c);
+  if (value > max) return max + rubberBandInverse(value - max, d, c);
+  return value;
+};
+
 // Rubber band in either direction from 0, for things with no free range
 export const stretch = (delta: number, d: number) =>
   Math.sign(delta) * rubberBand(Math.abs(delta), d);
